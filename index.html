@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+    #game {
+        width: 50vw;
+        height: 50vw;
+        margin: auto;
+    }
+    #controller,#info,#msg{
+        width: 50vw;
+        margin: 1rem auto;
+    }
+
+    #info .player{
+        width: 49%;
+        float: left;
+    }
+    .leaf{
+        border:1px solid grey;
+        width: 1rem;height: 1rem;
+        border-radius: 1rem;
+        display: block;
+        float: left;
+    }
+</style>
+<body>
+    <div id="game"></div>
+    <div id="info"></div>
+    <div id="controller">
+        <button id="regret">← 悔棋</button>
+        <button id="undoregret" >撤销悔棋→</button>
+        <button id="restart" onclick="start(false)">重新开始</button>
+    </div>
+    <div id="msg">
+        <p>解说：</p>
+        <div id="commentary"></div>
+    </div>
+</body>
+<script src="game.js"></script>
+<script>
+
+
+    start();
+    document.querySelector("#restart").onclick = start;
+    function start() {
+        // 设置棋盘大小
+        var board = new Board(13,13);
+        // 设置玩家信息
+        board.addPlayer(new Player({name: '柯洁',level: '九段' , type: 'white'}));
+        board.addPlayer(new Player({name: '阿法狗',level: '九段' , type: 'black'}));
+
+        // 渲染界面
+        var game = new DomRender('#game',board);
+        game.initCommentaryBox("#commentary");
+        game.initPlayerBox("#info");
+        game.addCommentaryText("<strong style='color: #5ca3e8'>游戏开始了，好好玩！</strong>")
+
+        // 绑定界面
+        document.querySelector("#regret").onclick = function() {
+            if(board.history.length<=0)return;
+            if(board.isOver)return;
+            game.addCommentaryText("<i>no!臭不要脸的 <strong>"+game.getPrevPlayer().name+"</strong> 悔棋了！</i>")
+            game.doRegret()
+        };
+
+        document.querySelector("#undoregret").onclick = function() {
+            game.doUndoRegret();
+        }
+    }
+</script>
+</html>
